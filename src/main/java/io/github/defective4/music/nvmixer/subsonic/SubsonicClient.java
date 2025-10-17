@@ -18,7 +18,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import io.github.defective4.music.nvmixer.crypto.TokenGenerator;
-import io.github.defective4.music.nvmixer.subsonic.model.SubsonicResponse;
+import io.github.defective4.music.nvmixer.subsonic.model.Playlist;
+import io.github.defective4.music.nvmixer.subsonic.model.response.PlaylistResponse;
+import io.github.defective4.music.nvmixer.subsonic.model.response.PlaylistsResponse;
+import io.github.defective4.music.nvmixer.subsonic.model.response.SubsonicResponse;
 
 public class SubsonicClient {
 
@@ -40,6 +43,20 @@ public class SubsonicClient {
         this.appName = appName;
     }
 
+    public PlaylistResponse getPlaylist(String id) throws IOException {
+        return readObject("getPlaylist", PlaylistResponse.class, Map.of("id", id));
+    }
+
+    public PlaylistsResponse getPlaylists() throws IOException {
+        return readObject("getPlaylists", PlaylistsResponse.class);
+    }
+
+    public Playlist populatePlaylist(Playlist playlist) throws IOException {
+        PlaylistResponse resp = getPlaylist(playlist.getId());
+        if (resp.isError()) throw new IOException(resp.getError().message());
+        return resp.getPlaylist();
+    }
+
     private URL constructURL(String path) throws IOException {
         return constructURL(path, Collections.emptyMap());
     }
@@ -58,11 +75,23 @@ public class SubsonicClient {
                 .toURL();
     }
 
-    private <T extends SubsonicResponse> T readObject(String path, Class<T> type) throws IOException {
-        try (Reader reader = new InputStreamReader(constructURL(path).openStream())) {
-            JsonElement element = JsonParser.parseReader(reader).getAsJsonObject().get("subsonic-response");
-            return gson.fromJson(element, type);
+    private JsonElement readJSON(String path) throws IOException {
+        return readJSON(path, Map.of());
+    }
+
+    private JsonElement readJSON(String path, Map<String, String> params) throws IOException {
+        try (Reader reader = new InputStreamReader(constructURL(path, params).openStream())) {
+            return JsonParser.parseReader(reader).getAsJsonObject().get("subsonic-response");
         }
+    }
+
+    private <T extends SubsonicResponse> T readObject(String path, Class<T> type) throws IOException {
+        return readObject(path, type, Map.of());
+    }
+
+    private <T extends SubsonicResponse> T readObject(String path, Class<T> type, Map<String, String> params)
+            throws IOException {
+        return gson.fromJson(readJSON(path, params), type);
     }
 
     private static String urlformat(String str) {

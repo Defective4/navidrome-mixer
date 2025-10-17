@@ -1,4 +1,6 @@
-package io.github.defective4.music.nvmixer.subsonic.model;
+package io.github.defective4.music.nvmixer.subsonic.model.response;
+
+import io.github.defective4.music.nvmixer.subsonic.model.SubsonicError;
 
 public class SubsonicResponse {
     private final SubsonicError error;
