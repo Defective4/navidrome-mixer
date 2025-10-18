@@ -2,20 +2,13 @@ package io.github.defective4.music.nvmixer.subsonic.model.response;
 
 import java.util.List;
 
+import com.google.gson.annotations.SerializedName;
+
 import io.github.defective4.music.nvmixer.subsonic.model.Playlist;
 import io.github.defective4.music.nvmixer.subsonic.model.SubsonicError;
 
 public class PlaylistsResponse extends SubsonicResponse {
-    public static class Playlists {
-        private final List<Playlist> playlist;
-
-        public Playlists(List<Playlist> playlist) {
-            this.playlist = playlist;
-        }
-
-        public List<Playlist> getPlaylists() {
-            return playlist;
-        }
+    public static record Playlists(@SerializedName("playlist") List<Playlist> playlists) {
     }
 
     private final Playlists playlists;

@@ -57,7 +57,7 @@ public class SubsonicClient {
     }
 
     public Playlist populatePlaylist(Playlist playlist) throws IOException {
-        PlaylistResponse resp = getPlaylist(playlist.getId());
+        PlaylistResponse resp = getPlaylist(playlist.id());
         if (resp.isError()) throw new IOException(resp.getError().message());
         return resp.getPlaylist();
     }
