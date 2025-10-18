@@ -19,6 +19,7 @@ import com.google.gson.JsonParser;
 
 import io.github.defective4.music.nvmixer.crypto.TokenGenerator;
 import io.github.defective4.music.nvmixer.subsonic.model.Playlist;
+import io.github.defective4.music.nvmixer.subsonic.model.response.IndexResponse;
 import io.github.defective4.music.nvmixer.subsonic.model.response.PlaylistResponse;
 import io.github.defective4.music.nvmixer.subsonic.model.response.PlaylistsResponse;
 import io.github.defective4.music.nvmixer.subsonic.model.response.SubsonicResponse;
@@ -41,6 +42,10 @@ public class SubsonicClient {
         tokenGenerator = new TokenGenerator(16);
         this.password = password;
         this.appName = appName;
+    }
+
+    public IndexResponse getIndexes() throws IOException {
+        return readObject("getIndexes", IndexResponse.class);
     }
 
     public PlaylistResponse getPlaylist(String id) throws IOException {
